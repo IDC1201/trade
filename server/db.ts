@@ -1,7 +1,20 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, and, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
-import { ENV } from './_core/env';
+import {
+  InsertUser,
+  users,
+  botConfigurations,
+  BotConfiguration,
+  trades,
+  Trade,
+  openPositions,
+  OpenPosition,
+  fundingRates,
+  FundingRate,
+  portfolioMetrics,
+  PortfolioMetric,
+} from "../drizzle/schema";
+import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -56,8 +69,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.role = user.role;
       updateSet.role = user.role;
     } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'admin';
-      updateSet.role = 'admin';
+      values.role = "admin";
+      updateSet.role = "admin";
     }
 
     if (!values.lastSignedIn) {
@@ -84,9 +97,208 @@ export async function getUserByOpenId(openId: string) {
     return undefined;
   }
 
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.openId, openId))
+    .limit(1);
 
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// ============ Bot Configuration ============
+
+export async function getBotConfig(userId: number): Promise<BotConfiguration | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db
+    .select()
+    .from(botConfigurations)
+    .where(eq(botConfigurations.userId, userId))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function upsertBotConfig(
+  userId: number,
+  config: Partial<BotConfiguration>
+): Promise<BotConfiguration> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const existing = await getBotConfig(userId);
+
+  if (existing) {
+    await db
+      .update(botConfigurations)
+      .set({
+        ...config,
+        updatedAt: new Date(),
+      })
+      .where(eq(botConfigurations.userId, userId));
+
+    const updated = await getBotConfig(userId);
+    return updated!;
+  } else {
+    const result = await db.insert(botConfigurations).values({
+      userId,
+      ...config,
+    } as any);
+
+    const inserted = await getBotConfig(userId);
+    return inserted!;
+  }
+}
+
+// ============ Trades ============
+
+export async function createTrade(trade: Omit<Trade, "id" | "createdAt" | "updatedAt">) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(trades).values(trade as any);
+  return result;
+}
+
+export async function updateTrade(tradeId: number, updates: Partial<Trade>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(trades)
+    .set({
+      ...updates,
+      updatedAt: new Date(),
+    })
+    .where(eq(trades.id, tradeId));
+}
+
+export async function getTradesByUser(
+  userId: number,
+  limit: number = 100,
+  offset: number = 0
+): Promise<Trade[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(trades)
+    .where(eq(trades.userId, userId))
+    .orderBy(desc(trades.createdAt))
+    .limit(limit)
+    .offset(offset);
+}
+
+export async function getOpenTradesByUser(userId: number): Promise<Trade[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(trades)
+    .where(and(eq(trades.userId, userId), eq(trades.status, "OPEN")))
+    .orderBy(desc(trades.entryTime));
+}
+
+// ============ Open Positions ============
+
+export async function createOpenPosition(
+  position: Omit<OpenPosition, "id" | "createdAt" | "updatedAt">
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(openPositions).values(position as any);
+}
+
+export async function updateOpenPosition(
+  positionId: number,
+  updates: Partial<OpenPosition>
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(openPositions)
+    .set({
+      ...updates,
+      updatedAt: new Date(),
+    })
+    .where(eq(openPositions.id, positionId));
+}
+
+export async function deleteOpenPosition(positionId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(openPositions).where(eq(openPositions.id, positionId));
+}
+
+export async function getOpenPositionsByUser(userId: number): Promise<OpenPosition[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(openPositions)
+    .where(eq(openPositions.userId, userId))
+    .orderBy(desc(openPositions.entryTime));
+}
+
+// ============ Funding Rates ============
+
+export async function upsertFundingRate(rate: Omit<FundingRate, "id" | "createdAt">) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(fundingRates).values(rate as any).onDuplicateKeyUpdate({
+    set: {
+      fundingRate: rate.fundingRate,
+      fundingTime: rate.fundingTime,
+      nextFundingTime: rate.nextFundingTime,
+    },
+  });
+}
+
+export async function getLatestFundingRates(limit: number = 50): Promise<FundingRate[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(fundingRates)
+    .orderBy(desc(fundingRates.createdAt))
+    .limit(limit);
+}
+
+// ============ Portfolio Metrics ============
+
+export async function createPortfolioMetric(
+  metric: Omit<PortfolioMetric, "id" | "createdAt">
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(portfolioMetrics).values(metric as any);
+}
+
+export async function getPortfolioMetrics(
+  userId: number,
+  period: "daily" | "monthly" | "yearly",
+  limit: number = 100
+): Promise<PortfolioMetric[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(portfolioMetrics)
+    .where(
+      and(eq(portfolioMetrics.userId, userId), eq(portfolioMetrics.period, period))
+    )
+    .orderBy(desc(portfolioMetrics.date))
+    .limit(limit);
+}

@@ -27,9 +27,14 @@ import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
+import { Activity, Settings, History, TrendingUp } from "lucide-react";
+
 const menuItems = [
-  { icon: LayoutDashboard, label: "Page 1", path: "/" },
-  { icon: Users, label: "Page 2", path: "/some-path" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
+  { icon: Activity, label: "Open Positions", path: "/" },
+  { icon: TrendingUp, label: "Funding Rates", path: "/funding-rates" },
+  { icon: History, label: "Trade History", path: "/trades" },
+  { icon: Settings, label: "Configuration", path: "/configuration" },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -170,8 +175,8 @@ function DashboardLayoutContent({
               </button>
               {!isCollapsed ? (
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-semibold tracking-tight truncate">
-                    Navigation
+                  <span className="font-bold tracking-tight truncate text-sm">
+                    BAZ Crypto
                   </span>
                 </div>
               ) : null}

@@ -1,0 +1,44 @@
+{
+  "build_command": "pnpm run build",
+  "capabilities": [
+    "server",
+    "db",
+    "user"
+  ],
+  "dev_command": "pnpm run dev",
+  "env_vars": {
+    "DATABASE_URL": "mysql://4FnhkoY8TEj62wz.7c949bfa16e2:w1u69yLi3BSf1jDlIo3d@gateway03.us-east-1.prod.aws.tidbcloud.com:4000/e8q7s74xEX2d6vWb58Gmj4?ssl={\"rejectUnauthorized\":true}"
+  },
+  "experiments": [
+    "no_db_push",
+    "references_readme"
+  ],
+  "git_remote": {
+    "repo_url": "s3://vida-prod-gitrepo/webdev-git/310519663764146627/e8q7s74xEX2d6vWb58Gmj4",
+    "access_key_id": "ASIAZV3A2ECZDCNMQDDG",
+    "secret_access_key": "hW965lKfQxBcGt3b64U8fh8JeF46jLfXRRZIuGAd",
+    "session_token": "IQoJb3JpZ2luX2VjEK7//////////wEaCXVzLWVhc3QtMSJGMEQCIE6BzLmHF3JkLuPUfqFKHU20xOf0Ppb+gTUmPFFhRiOEAiBa2KzCi+myAwE7Bo1NuUtubBf37DExEfA5UNxzgaZkPyr2Awh3EAQaDDY2NTM4NjA5ODg2NiIMLYre1wXw2yPGc9yCKtMDOR5zlWMzou1eRBIO1DIoOWvLp9ss7aIcPgDEUDxfxhCEY6WWAI2WX4yrEhflsB/zyheKP2e/ypvHAqOSoaRYhRV2XViRF6ce7juFtLRVs/vY03AFHWG+PHVy3jscdlCaY28TwWK/Z5dpyB+iCcfKA+HJynQvriRnWlPgZuFqmkx4xSrY88XwHQM56ykFE/MxcznEB+Kxi8vh3DKVw0PvJGRF+Xk0a2yMlSAArZ2Ar6QwFM4EFoUg7BY+wuNw/CeQIsTDuvOa3UM2moEXH3Sw+LHVCzy/BUHRglgUvAhQIgJp220YWLSBLw/ZZ0i0FQhhL2ruUX+UawZJd9w16RQm9nA6OMOZKO924h6Y8rbBcLdq7xf0PEmRZXv8ycr/pPAQeTwAw2Gnb1sa1BzpcN85YMQYkB3kMVizbHCHf+DMc4O/O969MZING8HQZxdRd/eFgxYSfbfa8bHeYcQRy3NEqEoKAynN+XMYE+L7XSYJ80QBoRZbMPSTOqA6Vnfw6wbfvtpv8b4YPIz7Un/PKehE27aBArR8c0fAtdI5jqRQ6qYmuVcMv/+epb+sh98YiMBO/nMrXosk8WVSn7YDhDA2tIFvRAaS1Z/yZ9YO1IruJ8nZRfUwiZ/F0QY6ngEzfYGP7jich+kA/bKgVl8XxlAe2CMWJzSBJy1XCWqX+9H+WBwl03ep8Squh6D0y/CDLdV0iJTauiWR05zeHKTtdX7YrL1FhwEHGmhbZx55bF0IkQIlFlWlo/kYQpDUmzYjhOZABwQxoP4u1nN/1cmGjm0J7/il5oe15Jm1pNYr6lOqYIvFyChbRlShhCGepIbz+YCeFo+rL/U0/TbJpg==",
+    "expiration": "2026-06-17T01:28:41.000Z"
+  },
+  "name": "baz-crypto-tech",
+  "path": "/home/ubuntu/baz-crypto-tech",
+  "port": 3000,
+  "secrets": {
+    "BUILT_IN_FORGE_API_KEY": "4JmBvSVfy28fDNXZdzkCBC",
+    "BUILT_IN_FORGE_API_URL": "https://forge.manus.ai",
+    "JWT_SECRET": "PJwHxwAwkbCk7SkCSfjYyr",
+    "OAUTH_SERVER_URL": "https://api.manus.im",
+    "OWNER_NAME": "BAZ HOLDING GROUP",
+    "OWNER_OPEN_ID": "N7pTDah38TZJGRBK5dMCAA",
+    "VITE_ANALYTICS_ENDPOINT": "https://manus-analytics.com",
+    "VITE_ANALYTICS_WEBSITE_ID": "ab6e7b66-7b48-49ca-8cff-6d050d230ea1",
+    "VITE_APP_ID": "e8q7s74xEX2d6vWb58Gmj4",
+    "VITE_APP_LOGO": "",
+    "VITE_APP_TITLE": "BAZ Crypto Tech - Funding Arbitrage Bot",
+    "VITE_FRONTEND_FORGE_API_KEY": "YRN3zSXLdsCGYSbw2MvLEm",
+    "VITE_FRONTEND_FORGE_API_URL": "https://forge.manus.ai",
+    "VITE_OAUTH_PORTAL_URL": "https://manus.im"
+  },
+  "template_id": "web-db-user",
+  "test_command": "pnpm test"
+}
